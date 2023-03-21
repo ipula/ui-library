@@ -52,8 +52,6 @@
 				/>
 				<span
 					v-if="prefix"
-					class="pkpFormField__inputPrefix"
-					v-html="prefix"
 					ref="prefix"
 					:style="prefixStyles"
 					@click="setFocus"
@@ -80,7 +78,7 @@
 		</div>
 	</div>
 </template>
-
+optIntoEdit
 <script>
 import FieldBase from './FieldBase.vue';
 
@@ -90,6 +88,7 @@ export default {
 	props: {
 		inputType: String,
 		optIntoEdit: Boolean,
+		disableFeild: Boolean,
 		optIntoEditLabel: String,
 		size: {
 			default: 'normal',
@@ -197,6 +196,10 @@ export default {
 
 		// Set the field to disabled if optIntoEdit is passed
 		if (this.optIntoEdit) {
+			this.isDisabled = true;
+		}
+		// Set the field to disabled if disableFeild is passed
+		if (this.disableFeild) {
 			this.isDisabled = true;
 		}
 	},
