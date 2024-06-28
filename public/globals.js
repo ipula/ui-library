@@ -341,7 +341,7 @@ window.pkp = {
 		'form.saved': 'Saved',
 		'grid.action.sort': 'Sort',
 		'help.help': 'Help',
-		'invitation.orcid.message': 'On accepting the invite, the user will redirected to ORCID to verify their account, if the wish to',
+		'invitation.orcid.message': 'On accepting the invitation, the user will be redirected to ORCID to verify their account',
 		'invitation.role.addRole.button': 'Add Another Role',
 		'invitation.role.dateEnd': 'End Date',
 		'invitation.role.dateStart': 'Start Date',
