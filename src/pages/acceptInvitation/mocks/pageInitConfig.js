@@ -12,7 +12,7 @@ export default {
 			reviewName: '',
 			stepName: '{$step} - Verify ORCID iD',
 			type: 'popup',
-			description: 'Please verify orcid iD',
+			description: 'Please verify ORCID iD',
 			stepButtonName: 'Save And Continue',
 			sections: [
 				{
