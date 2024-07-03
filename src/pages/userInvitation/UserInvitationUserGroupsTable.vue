@@ -1,10 +1,12 @@
 <template>
 	<PkpTable aria-label="Example for basic table">
 		<TableHeader>
-			<TableColumn>Title</TableColumn>
-			<TableColumn>Start Date</TableColumn>
-			<TableColumn>End Date</TableColumn>
-			<TableColumn>Journal Masthead</TableColumn>
+			<TableColumn>{{ t('userInvitation.roleTable.role') }}</TableColumn>
+			<TableColumn>{{ t('userInvitation.roleTable.startDate') }}</TableColumn>
+			<TableColumn>{{ t('userInvitation.roleTable.endDate') }}</TableColumn>
+			<TableColumn>
+				{{ t('userInvitation.roleTable.journalMasthead') }}
+			</TableColumn>
 			<TableColumn></TableColumn>
 		</TableHeader>
 		<TableBody>
@@ -170,7 +172,7 @@ const userGroupErrors = computed(() => {
 });
 </script>
 <style>
-select {
+td select {
 	width: 13rem !important;
 }
 </style>
