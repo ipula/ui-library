@@ -184,7 +184,8 @@ export default {
 			reviewName: '',
 			stepName: '{$step} - Verify ORCID iD',
 			type: 'popup',
-			description: 'Please verify orcid iD',
+			description:
+				'You can choose to verify your ORCID iD or skip it. If you choose to skip it now, You can verify your ORCID iD from your profile section in OJS later.',
 			stepButtonName: 'Save And Continue',
 			sections: [
 				{
