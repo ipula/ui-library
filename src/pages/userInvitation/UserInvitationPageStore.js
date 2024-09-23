@@ -14,9 +14,15 @@ export const useUserInvitationPageStore = defineComponentStore(
 		 * Invitation payload, initial value
 		 */
 		const invitationPayload = ref({...pageInitConfig.invitationPayload});
+		const updatedPayload = ref({});
+		const invitationType = ref(pageInitConfig.invitationType);
+		const invitationMode = ref(pageInitConfig.invitationMode);
 
-		function updatePayload(fieldName, value) {
+		function updatePayload(fieldName, value, initialValue = true) {
 			invitationPayload.value[fieldName] = value;
+			if (!initialValue) {
+				updatedPayload.value[fieldName] = value;
+			}
 		}
 
 		/**
@@ -156,13 +162,13 @@ export const useUserInvitationPageStore = defineComponentStore(
 			if (!currentStep.value) {
 				return '';
 			}
-			return currentStep.value.reviewName.replace(
+			return currentStep.value.stepLabel.replace(
 				'{$step}',
-				'STEP -' + (1 + currentStepIndex.value),
+				'STEP ' + (1 + currentStepIndex.value),
 			);
 		});
 
-		/** All Erros */
+		/** All Errors */
 		const errors = ref({});
 
 		/**
@@ -185,6 +191,22 @@ export const useUserInvitationPageStore = defineComponentStore(
 							if (Object.keys(errors.value).includes(field)) {
 								sectionErr[field] = errors.value[field];
 							}
+							if (field === 'userGroupsToAdd') {
+								invitationPayload.value.userGroupsToAdd.forEach(
+									(userGroupsObj, index) => {
+										Object.keys(userGroupsObj).forEach((obj) => {
+											if (
+												Object.keys(errors.value).includes(
+													'userGroupsToAdd.' + index + '.' + obj,
+												)
+											) {
+												sectionErr['userGroupsToAdd.' + index + '.' + obj] =
+													errors.value['userGroupsToAdd.' + index + '.' + obj];
+											}
+										});
+									},
+								);
+							}
 						});
 						if (Object.keys(sectionErr).length != 0) {
 							error[index] = sectionErr;
@@ -192,10 +214,40 @@ export const useUserInvitationPageStore = defineComponentStore(
 					}
 				});
 			}
-
 			return error;
 		});
 
+		const createInvitationPayload = computed(() => {
+			if (invitationPayload.value.userId) {
+				return {
+					invitationData: {
+						userId: invitationPayload.value.userId,
+					},
+				};
+			}
+			return {
+				invitationData: {
+					inviteeEmail: invitationPayload.value.email,
+				},
+			};
+		});
+
+		const updateInvitationPayload = computed(() => {
+			let invitationData = {};
+			if (invitationMode.value === 'edit') {
+				invitationData = {
+					userGroupsToAdd: invitationPayload.value.userGroupsToAdd,
+					userGroupsToRemove: invitationPayload.value.userGroupsToRemove,
+				};
+			} else {
+				invitationData = {
+					...updatedPayload.value,
+				};
+			}
+			return {
+				invitationData: invitationData,
+			};
+		});
 		/**
 		 * Invitation actions
 		 */
@@ -204,11 +256,11 @@ export const useUserInvitationPageStore = defineComponentStore(
 		 * Create invitation
 		 */
 		async function createInvitation() {
-			const {apiUrl} = useUrl('invitations');
+			const {apiUrl} = useUrl(`invitations/add/${invitationType.value}`);
 
 			const {data, fetch: createInvitation} = useFetch(apiUrl, {
 				method: 'POST',
-				body: {type: pageInitConfig.invitationType},
+				body: createInvitationPayload.value,
 			});
 			await createInvitation();
 			invitationId.value = data.value.invitationId;
@@ -220,29 +272,31 @@ export const useUserInvitationPageStore = defineComponentStore(
 				await createInvitation();
 			}
 
-			const {apiUrl} = useUrl(`invitations/${invitationId.value}`);
+			const {apiUrl} = useUrl(`invitations/${invitationId.value}/populate`);
 
 			const {fetch, validationError} = useFetch(apiUrl, {
-				method: 'POST',
-				body: invitationPayload.value,
+				method: 'PUT',
+				body: updateInvitationPayload.value,
 				expectValidationError: true,
 			});
 			await fetch();
 			if (validationError.value) {
-				errors.value = validationError.value;
+				errors.value = validationError.value.errors;
 			} else {
 				errors.value = [];
 			}
 		}
 
+		const isSubmitting = ref(false);
 		/** Submit invitation */
 		async function submitInvitation() {
 			await updateInvitation();
 			if (isValid.value) {
-				const {apiUrl} = useUrl(`invitations/${invitationId.value}/submit`);
+				isSubmitting.value = true;
+				const {apiUrl} = useUrl(`invitations/${invitationId.value}/invite`);
 
 				const {data, fetch} = useFetch(apiUrl, {
-					method: 'POST',
+					method: 'PUT',
 					body: {},
 				});
 
@@ -257,11 +311,14 @@ export const useUserInvitationPageStore = defineComponentStore(
 							{
 								label: t('userInvitation.modal.button'),
 								callback: (close) => {
-									close();
+									const {redirectToPage} = useUrl('management/settings/access');
+									redirectToPage();
 								},
 							},
 						],
 					});
+				} else {
+					isSubmitting.value = false;
 				}
 			}
 		}
@@ -269,6 +326,20 @@ export const useUserInvitationPageStore = defineComponentStore(
 		const registeredActionsForSteps = {};
 		function registerActionForStepId(stepId, callback) {
 			registeredActionsForSteps[stepId] = callback;
+		}
+
+		function updateWithSelectedUserGroups(userGroups) {
+			userGroups.filter((element) => {
+				if (
+					invitationPayload.value.userGroupsToAdd.find(
+						(data) => data.userGroupId === element.value,
+					)
+				) {
+					element.disabled = true;
+				} else {
+					element.disabled = false;
+				}
+			});
 		}
 
 		onMounted(() => {
@@ -284,7 +355,7 @@ export const useUserInvitationPageStore = defineComponentStore(
 			invitationPayload,
 			updatePayload,
 			registerActionForStepId,
-			//computed values
+
 			currentStep,
 			currentStepIndex,
 			isOnFirstStep,
@@ -295,16 +366,16 @@ export const useUserInvitationPageStore = defineComponentStore(
 			stepTitle,
 			openStep,
 			currentStepErrorsPerSection,
+			isSubmitting,
+			invitationMode,
+			updateWithSelectedUserGroups,
 
-			//page values
 			steps,
 			pageTitleDescription,
 			errors,
 
-			//form fields
 			primaryLocale,
 
-			//methods
 			nextStep,
 			previousStep,
 		};

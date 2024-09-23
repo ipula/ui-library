@@ -1,16 +1,26 @@
 <template>
-	<div v-if="store.invitationPayload.userId === null">
+	<div
+		v-if="
+			store.invitationPayload.userId === null &&
+			store.invitationMode === 'create'
+		"
+	>
 		<PkpForm
 			v-bind="userForm"
 			class="userInvitation__stepForm"
 			@set="updateUserForm"
 		></PkpForm>
 	</div>
-	<div v-if="store.invitationPayload.userId !== null" class="p-8">
+	<div
+		v-if="
+			store.invitationPayload.userId !== null || store.invitationMode === 'edit'
+		"
+		class="p-8"
+	>
 		<div class="p-1">
 			<FormDisplayItemBasic
 				heading-element="h4"
-				:heading="t('user.emailAddress')"
+				:heading="t('user.email')"
 				:value="store.invitationPayload.email"
 			></FormDisplayItemBasic>
 
@@ -63,9 +73,10 @@ import UserInvitationUserGroupsTable from './UserInvitationUserGroupsTable.vue';
 import {useUserInvitationPageStore} from './UserInvitationPageStore';
 import {useForm} from '@/composables/useForm';
 
-function updateUserForm(a, {fields}, c, d) {
-	if (fields) {
-		fields.forEach((field) => {
+function updateUserForm(a, form, c, d) {
+	set(a, form, c, d);
+	if (form.fields) {
+		form.fields.forEach((field) => {
 			if (store.invitationPayload[field.name] !== field.value) {
 				store.updatePayload(field.name, field.value);
 			}
@@ -85,7 +96,26 @@ const {
 	form: userForm,
 	connectWithPayload,
 	connectWithErrors,
+	set,
 } = useForm(props.form);
+
+if (!store.invitationPayload.userId && store.invitationMode != 'edit') {
+	userForm.value.fields.forEach((field) => {
+		if (field.isMultilingual) {
+			store.updatePayload(field.name, field.value, false);
+		} else {
+			if (store.invitationPayload[field.name] === null) {
+				store.updatePayload(field.name, field.value, false);
+			} else {
+				store.updatePayload(
+					field.name,
+					store.invitationPayload[field.name],
+					false,
+				);
+			}
+		}
+	});
+}
 
 connectWithPayload(store.invitationPayload);
 

@@ -32,55 +32,92 @@
 					</PkpButton>
 				</TableCell>
 			</TableRow>
-			<TableRow v-for="(row, index) in allUserGroups" :key="index">
+			<TableRow v-for="(row, index) in allUserGroupsToAdd" :key="index">
 				<TableCell>
-					<FieldSelect
-						name="userGroup"
-						:label="t('invitation.role.selectRole')"
-						:is-required="true"
-						:value="row.userGroup"
-						:options="availableUserGroups"
-						:all-errors="userGroupErrors[index]"
-						class="userInvitation__roleSelect"
-						@change="
-							(fieldName, propName, newValue, localeKey) =>
-								updateUserGroup(index, fieldName, newValue)
-						"
-					/>
+					<div v-if="oldUserGroupsToAdd[index].visible">
+						{{
+							availableUserGroups.find((role) => role.value === row.userGroupId)
+								.label
+						}}
+					</div>
+					<div v-else>
+						<FieldSelect
+							name="userGroupId"
+							:label="t('invitation.role.selectRole')"
+							:is-required="true"
+							:value="row.userGroupId"
+							:options="availableUserGroups"
+							:all-errors="{
+								userGroupId:
+									userGroupErrors['userGroupsToAdd.' + index + '.userGroupId'],
+							}"
+							class="userInvitation__roleSelect"
+							@change="
+								(fieldName, propName, newValue, localeKey) =>
+									updateUserGroup(index, fieldName, newValue)
+							"
+						/>
+					</div>
 				</TableCell>
 				<TableCell>
-					<FieldText
-						name="dateStart"
-						:label="t('invitation.role.dateStart')"
-						input-type="date"
-						:is-required="true"
-						:value="row.dateStart"
-						:all-errors="userGroupErrors[index]"
-						@change="
-							(fieldName, propName, newValue, localeKey) =>
-								updateUserGroup(index, fieldName, newValue)
-						"
-					/>
+					<div v-if="oldUserGroupsToAdd[index].visible">
+						{{ row.dateStart }}
+					</div>
+					<div v-else>
+						<FieldText
+							name="dateStart"
+							:label="t('invitation.role.dateStart')"
+							input-type="date"
+							:is-required="true"
+							:value="row.dateStart"
+							:all-errors="{
+								dateStart:
+									userGroupErrors['userGroupsToAdd.' + index + '.dateStart'],
+							}"
+							@change="
+								(fieldName, propName, newValue, localeKey) =>
+									updateUserGroup(index, fieldName, newValue)
+							"
+						/>
+					</div>
 				</TableCell>
 				<TableCell>---</TableCell>
 				<TableCell>
-					<FieldSelect
-						name="masthead"
-						:label="t('invitation.role.masthead')"
-						:is-required="true"
-						:value="row.masthead"
-						:options="[
-							{label: 'Appear on the masthead', value: true},
-							{label: 'Dose not appear on the masthead', value: false},
-						]"
-						:all-errors="userGroupErrors[index]"
-						@change="
-							(fieldName, propName, newValue, localeKey) =>
-								updateUserGroup(index, fieldName, newValue)
-						"
-					/>
+					<div v-if="oldUserGroupsToAdd[index].visible">
+						{{
+							row.masthead
+								? t('invitation.masthead.show')
+								: t('invitation.masthead.hidden')
+						}}
+					</div>
+					<div v-else>
+						<FieldSelect
+							name="masthead"
+							:label="t('invitation.role.masthead')"
+							:is-required="true"
+							:value="row.masthead"
+							:options="[
+								{label: t('invitation.masthead.show'), value: true},
+								{label: t('invitation.masthead.hidden'), value: false},
+							]"
+							:all-errors="{
+								masthead:
+									userGroupErrors['userGroupsToAdd.' + index + '.masthead'],
+							}"
+							@change="
+								(fieldName, propName, newValue, localeKey) =>
+									updateUserGroup(index, fieldName, newValue)
+							"
+						/>
+					</div>
 				</TableCell>
-				<TableCell></TableCell>
+				<TableCell>
+					<div v-if="oldUserGroupsToAdd[index].visible">
+						<PkpButton class="border-none" @click="modifyUserGroup(index)">
+							{{ t('invitation.role.modifyRole.button') }}
+						</PkpButton>
+					</div>
+				</TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell>
@@ -98,7 +135,7 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
+import {computed, ref} from 'vue';
 import {useTranslation} from '@/composables/useTranslation';
 import PkpTable from '@/components/Table/Table.vue';
 import TableCell from '@/components/Table/TableCell.vue';
@@ -111,21 +148,41 @@ import PkpButton from '@/components/Button/Button.vue';
 import FieldText from '@/components/Form/fields/FieldText.vue';
 import {useUserInvitationPageStore} from './UserInvitationPageStore';
 
-const store = useUserInvitationPageStore();
-const {t} = useTranslation();
-
-const allUserGroups = computed(() => store.invitationPayload.userGroupsToAdd);
-
 const props = defineProps({
 	userGroups: {type: Object, required: true},
 });
 
+const store = useUserInvitationPageStore();
+const {t} = useTranslation();
+const oldUserGroupsToAdd = ref(
+	JSON.parse(JSON.stringify(store.invitationPayload.userGroupsToAdd)),
+);
+
+oldUserGroupsToAdd.value.forEach((element) => {
+	if (store.invitationMode === 'edit') {
+		element.visible = true;
+	} else {
+		element.visible = false;
+	}
+});
+
+const allUserGroupsToAdd = computed(
+	() => store.invitationPayload.userGroupsToAdd,
+);
+
+/**
+ * update selected user group
+ * @param index Number
+ * @param fieldName String
+ * @param newValue String
+ */
 function updateUserGroup(index, fieldName, newValue) {
 	const userGroupsUpdate = [...store.invitationPayload.userGroupsToAdd];
 
 	userGroupsUpdate[index][fieldName] = newValue;
 
-	store.updatePayload('userGroupsToAdd', userGroupsUpdate);
+	store.updatePayload('userGroupsToAdd', userGroupsUpdate, false);
+	store.updateWithSelectedUserGroups(props.userGroups);
 }
 
 const availableUserGroups = computed(() => {
@@ -136,24 +193,47 @@ const availableUserGroups = computed(() => {
 	});
 });
 
+/**
+ * add user groups to the invitation payload
+ */
 function addUserGroup() {
 	const userGroupsUpdate = [...store.invitationPayload.userGroupsToAdd];
 	userGroupsUpdate.push({
-		userGroup: null,
+		userGroupId: null,
 		dateStart: null,
 		masthead: null,
 	});
-	store.updatePayload('userGroupsToAdd', userGroupsUpdate);
+	if (store.invitationMode === 'edit') {
+		oldUserGroupsToAdd.value.push({
+			visible: false,
+		});
+	}
+	store.updatePayload('userGroupsToAdd', userGroupsUpdate, false);
 }
 
+/**
+ * remove user groups form user
+ * @param userGroup Object
+ * @param index Number
+ */
 function removeUserGroup(userGroup, index) {
 	store.invitationPayload.currentUserGroups.splice(index, 1);
-	const userGroupsToRemove = [...store.invitationPayload.userGroupsToRemove];
-	userGroupsToRemove.push(userGroup.id);
-	store.updatePayload('userGroupsToRemove', userGroupsToRemove);
+	let userGroupsToRemove = [];
+	if (store.invitationPayload.userGroupsToRemove) {
+		userGroupsToRemove = [...store.invitationPayload.userGroupsToRemove];
+	}
+	userGroupsToRemove.push({userGroupId: userGroup.id});
+	store.updatePayload('userGroupsToRemove', userGroupsToRemove, false);
 }
 
+/**
+ * Modify user groups to not allows to select more that once
+ * @param index Number
+ */
+function modifyUserGroup(index) {
+	oldUserGroupsToAdd.value[index].visible = false;
+}
 const userGroupErrors = computed(() => {
-	return store.errors.userGroupsToAdd || [];
+	return store.errors || [];
 });
 </script>
