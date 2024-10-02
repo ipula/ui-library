@@ -34,7 +34,7 @@ export const useUserInvitationManagerStore = defineComponentStore(
 		 */
 		const invitationCount = ref(0);
 
-		const countPerPage = ref(2);
+		const countPerPage = ref(5);
 		const currentPage = ref(1);
 		function setCurrentPage(_currentPage) {
 			currentPage.value = _currentPage;
