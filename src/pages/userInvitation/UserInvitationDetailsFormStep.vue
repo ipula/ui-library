@@ -10,7 +10,7 @@
 		<div class="p-1">
 			<FormDisplayItemBasic
 				heading-element="h4"
-				:heading="t('user.emailAddress')"
+				:heading="t('user.email')"
 				:value="store.invitationPayload.email"
 			></FormDisplayItemBasic>
 
@@ -63,11 +63,22 @@ import UserInvitationUserGroupsTable from './UserInvitationUserGroupsTable.vue';
 import {useUserInvitationPageStore} from './UserInvitationPageStore';
 import {useForm} from '@/composables/useForm';
 
-function updateUserForm(a, {fields}, c, d) {
-	if (fields) {
-		fields.forEach((field) => {
-			if (store.invitationPayload[field.name] !== field.value) {
-				store.updatePayload(field.name, field.value);
+function updateUserForm(a, form, c, d) {
+	set(a, form, c, d);
+	if (form.fields) {
+		form.fields.forEach((field) => {
+			if (
+				field.isMultilingual &&
+				!Object.values(field.value).every(
+					(value) => value === null || value === '',
+				)
+			) {
+				store.updatePayload(field.name, field.value, false);
+			} else if (
+				!field.isMultilingual &&
+				!store.invitationPayload[field.name]
+			) {
+				store.updatePayload(field.name, field.value, false);
 			}
 		});
 	}
@@ -85,17 +96,52 @@ const {
 	form: userForm,
 	connectWithPayload,
 	connectWithErrors,
+	set,
 } = useForm(props.form);
+
+if (!store.invitationPayload.userId) {
+	userForm.value.fields.forEach((field) => {
+		if (field.isMultilingual) {
+			store.updatePayload(
+				field.name,
+				store.invitationPayload[field.name]
+					? store.invitationPayload[field.name]
+					: field.value,
+				store.invitationPayload[field.name] ? false : true,
+			);
+		} else {
+			if (store.invitationPayload[field.name] === null) {
+				store.updatePayload(field.name, field.value, true);
+			} else {
+				store.updatePayload(
+					field.name,
+					store.invitationPayload[field.name],
+					true,
+				);
+			}
+		}
+	});
+}
 
 connectWithPayload(store.invitationPayload);
 
 const sectionErrors = computed(() => {
-	return props.validateFields.reduce((obj, key) => {
-		if (store.errors[key]) {
-			obj[key] = store.errors[key];
-		}
-		return obj;
-	}, {});
+	let errors = {};
+	if (Object.keys(store.errors).length > 0) {
+		props.validateFields.forEach((element) => {
+			if (!store.errors[element]) {
+				props.form.supportedFormLocales.forEach((data) => {
+					errors[element] = {
+						...errors[element],
+						[data.key]: store.errors[element + '.' + data.key],
+					};
+				});
+			} else if (store.errors[element]) {
+				errors[element] = store.errors[element];
+			}
+		});
+	}
+	return errors;
 });
 connectWithErrors(sectionErrors);
 </script>

@@ -24,6 +24,9 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 		const email = ref({});
 		const userId = ref({});
 
+		/** All Errors */
+		const errors = ref({});
+
 		/** Create receive invitation url */
 		const receiveInvitationUrl = computed(() => {
 			const {apiUrl} = useUrl('invitations');
@@ -47,26 +50,61 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			});
 			await fetch();
 			if (validationError.value) {
-				errors.value = validationError.value;
+				openDialog({
+					title: t('common.error'),
+					message: validationError.value.errorMessage,
+					actions: [
+						{
+							label: t('common.close'),
+							callback: (close) => {
+								close();
+							},
+						},
+					],
+					close: () => {
+						const {redirectToPage} = useUrl('submissions');
+						redirectToPage();
+					},
+				});
 			} else {
+				email.value = data.value.email;
+				userId.value = data.value.userId;
 				updateAcceptInvitationPayload(
 					'familyName',
-					data.value.payload.familyName,
-					true,
+					data.value.familyName,
+					userId.value ? true : false,
 				);
 				updateAcceptInvitationPayload(
 					'givenName',
-					data.value.payload.givenName,
-					true,
+					data.value.givenName,
+					userId.value ? true : false,
 				);
-				updateAcceptInvitationPayload('orcid', data.value.payload.orcid, true);
+				updateAcceptInvitationPayload('userOrcid', data.value.orcid, true);
 				updateAcceptInvitationPayload(
 					'userGroupsToAdd',
-					data.value.payload.userGroupsToAdd,
+					data.value.userGroupsToAdd,
 					true,
 				);
-				email.value = data.value.email;
-				userId.value = data.value.userId;
+				updateAcceptInvitationPayload(
+					'userGroupsToRemove',
+					data.value.userGroupsToRemove,
+					true,
+				);
+				updateAcceptInvitationPayload(
+					'userCountry',
+					data.value.country,
+					userId.value ? true : false,
+				);
+				updateAcceptInvitationPayload(
+					'username',
+					null,
+					userId.value ? true : false,
+				);
+				updateAcceptInvitationPayload(
+					'password',
+					null,
+					userId.value ? true : false,
+				);
 				errors.value = [];
 				if (steps.value.length === 0) {
 					await submit();
@@ -173,8 +211,6 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			}
 		}
 
-		/** Errors */
-		const errors = ref({});
 		/**
 		 * Set current step section errors
 		 */
@@ -228,7 +264,7 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			if (!currentStep.value) {
 				return '';
 			}
-			return currentStep.value.stepName.replace(
+			return currentStep.value.stepLabel.replace(
 				'{$step}',
 				'STEP ' + (1 + currentStepIndex.value),
 			);
@@ -241,7 +277,7 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			if (!currentStep.value) {
 				return '';
 			}
-			return currentStep.value.stepButtonName;
+			return currentStep.value.nextButtonLabel;
 		});
 
 		/**
@@ -282,6 +318,17 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			);
 		});
 
+		const invitationRequestPayload = computed(() => {
+			if (userId.value) {
+				Object.keys(updatedPayload.value).forEach((element) => {
+					if (updatedPayload.value[element] === null) {
+						delete updatedPayload.value[element];
+					}
+				});
+			}
+			return updatedPayload.value;
+		});
+
 		/**
 		 * Update the payload
 		 *
@@ -292,11 +339,11 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			const {validationError, fetch} = useFetch(updateInvitationUrl, {
 				expectValidationError: true,
 				method: 'PUT',
-				body: updatedPayload.value,
+				body: {invitationData: invitationRequestPayload.value},
 			});
 			await fetch();
 			if (validationError.value) {
-				errors.value = validationError.value;
+				errors.value = validationError.value.errors;
 			} else {
 				errors.value = [];
 			}
@@ -321,7 +368,9 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 		 * request with any required confirmation fields
 		 */
 		async function submit() {
-			await updateInvitationPayload();
+			if (Object.keys(invitationRequestPayload.value).length > 0) {
+				await updateInvitationPayload();
+			}
 			if (isValid.value) {
 				const {data, fetch} = useFetch(finalizeInvitationUrl, {
 					expectValidationError: true,
@@ -338,7 +387,8 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 							{
 								label: t('acceptInvitation.modal.button'),
 								callback: (close) => {
-									close();
+									const {redirectToPage} = useUrl('submissions');
+									redirectToPage();
 								},
 							},
 						],

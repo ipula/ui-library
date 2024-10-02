@@ -4,7 +4,7 @@
 			<div class="p-1">
 				<FormDisplayItemBasic
 					heading-element="h4"
-					:heading="t('user.emailAddress')"
+					:heading="t('user.email')"
 					:value="store.email"
 				></FormDisplayItemBasic>
 			</div>
@@ -50,9 +50,10 @@ const props = defineProps({
 
 const store = useAcceptInvitationPageStore();
 
-function updateUserDetailsForm(a, {fields}, c, d) {
-	if (fields) {
-		fields.forEach((field) => {
+function updateUserDetailsForm(a, form, c, d) {
+	set(a, form, c, d);
+	if (form.fields) {
+		form.fields.forEach((field) => {
 			if (store.acceptinvitationPayload[field.name] !== field.value) {
 				store.updateAcceptInvitationPayload(field.name, field.value);
 			}
@@ -64,16 +65,44 @@ const {
 	form: userForm,
 	connectWithPayload,
 	connectWithErrors,
+	set,
 } = useForm(props.form);
+
+userForm.value.fields.forEach((field) => {
+	if (field.isMultilingual) {
+		store.updateAcceptInvitationPayload(field.name, field.value, false);
+	} else {
+		if (store.acceptinvitationPayload[field.name] === null) {
+			store.updateAcceptInvitationPayload(field.name, field.value, false);
+		} else {
+			store.updateAcceptInvitationPayload(
+				field.name,
+				store.acceptinvitationPayload[field.name],
+				false,
+			);
+		}
+	}
+});
+
 connectWithPayload(store.acceptinvitationPayload);
 
 const sectionErrors = computed(() => {
-	return props.validateFields.reduce((obj, key) => {
-		if (store.errors[key]) {
-			obj[key] = store.errors[key];
-		}
-		return obj;
-	}, {});
+	let errors = {};
+	if (Object.keys(store.errors).length > 0) {
+		props.validateFields.forEach((element) => {
+			if (!store.errors[element]) {
+				props.form.supportedFormLocales.forEach((data) => {
+					errors[element] = {
+						...errors[element],
+						[data.key]: store.errors[element + '.' + data.key],
+					};
+				});
+			} else if (store.errors[element]) {
+				errors[element] = store.errors[element];
+			}
+		});
+	}
+	return errors;
 });
 
 connectWithErrors(sectionErrors);

@@ -32,15 +32,18 @@
 					</PkpButton>
 				</TableCell>
 			</TableRow>
-			<TableRow v-for="(row, index) in allUserGroups" :key="index">
+			<TableRow v-for="(row, index) in allUserGroupsToAdd" :key="index">
 				<TableCell>
 					<FieldSelect
-						name="userGroup"
+						name="userGroupId"
 						:label="t('invitation.role.selectRole')"
 						:is-required="true"
-						:value="row.userGroup"
+						:value="row.userGroupId"
 						:options="availableUserGroups"
-						:all-errors="userGroupErrors[index]"
+						:all-errors="{
+							userGroupId:
+								userGroupErrors['userGroupsToAdd.' + index + '.userGroupId'],
+						}"
 						class="userInvitation__roleSelect"
 						@change="
 							(fieldName, propName, newValue, localeKey) =>
@@ -55,7 +58,10 @@
 						input-type="date"
 						:is-required="true"
 						:value="row.dateStart"
-						:all-errors="userGroupErrors[index]"
+						:all-errors="{
+							dateStart:
+								userGroupErrors['userGroupsToAdd.' + index + '.dateStart'],
+						}"
 						@change="
 							(fieldName, propName, newValue, localeKey) =>
 								updateUserGroup(index, fieldName, newValue)
@@ -70,10 +76,13 @@
 						:is-required="true"
 						:value="row.masthead"
 						:options="[
-							{label: 'Appear on the masthead', value: true},
-							{label: 'Dose not appear on the masthead', value: false},
+							{label: t('invitation.masthead.show'), value: true},
+							{label: t('invitation.masthead.hidden'), value: false},
 						]"
-						:all-errors="userGroupErrors[index]"
+						:all-errors="{
+							masthead:
+								userGroupErrors['userGroupsToAdd.' + index + '.masthead'],
+						}"
 						@change="
 							(fieldName, propName, newValue, localeKey) =>
 								updateUserGroup(index, fieldName, newValue)
@@ -111,21 +120,39 @@ import PkpButton from '@/components/Button/Button.vue';
 import FieldText from '@/components/Form/fields/FieldText.vue';
 import {useUserInvitationPageStore} from './UserInvitationPageStore';
 
-const store = useUserInvitationPageStore();
-const {t} = useTranslation();
-
-const allUserGroups = computed(() => store.invitationPayload.userGroupsToAdd);
-
 const props = defineProps({
 	userGroups: {type: Object, required: true},
 });
 
+const store = useUserInvitationPageStore();
+const {t} = useTranslation();
+
+store.updateWithSelectedUserGroups(props.userGroups);
+
+const allUserGroupsToAdd = computed(
+	() => store.invitationPayload.userGroupsToAdd,
+);
+
+if (store.invitationPayload.userGroupsToRemove) {
+	store.invitationPayload.userGroupsToRemove.forEach((element) => {
+		store.invitationPayload.currentUserGroups.splice(
+			store.invitationPayload.currentUserGroups.findIndex(
+				(role) => role.id === element.userGroupId,
+			),
+			1,
+		);
+	});
+}
+/**
+ * update selected user group
+ * @param index Number
+ * @param fieldName String
+ * @param newValue String
+ */
 function updateUserGroup(index, fieldName, newValue) {
 	const userGroupsUpdate = [...store.invitationPayload.userGroupsToAdd];
-
 	userGroupsUpdate[index][fieldName] = newValue;
-
-	store.updatePayload('userGroupsToAdd', userGroupsUpdate);
+	store.updatePayload('userGroupsToAdd', userGroupsUpdate, false);
 }
 
 const availableUserGroups = computed(() => {
@@ -136,24 +163,35 @@ const availableUserGroups = computed(() => {
 	});
 });
 
+/**
+ * add user groups to the invitation payload
+ */
 function addUserGroup() {
 	const userGroupsUpdate = [...store.invitationPayload.userGroupsToAdd];
 	userGroupsUpdate.push({
-		userGroup: null,
+		userGroupId: null,
 		dateStart: null,
 		masthead: null,
 	});
-	store.updatePayload('userGroupsToAdd', userGroupsUpdate);
+	store.updatePayload('userGroupsToAdd', userGroupsUpdate, false);
 }
 
+/**
+ * remove user groups form user
+ * @param userGroup Object
+ * @param index Number
+ */
 function removeUserGroup(userGroup, index) {
 	store.invitationPayload.currentUserGroups.splice(index, 1);
-	const userGroupsToRemove = [...store.invitationPayload.userGroupsToRemove];
-	userGroupsToRemove.push(userGroup.id);
-	store.updatePayload('userGroupsToRemove', userGroupsToRemove);
+	let userGroupsToRemove = [];
+	if (store.invitationPayload.userGroupsToRemove) {
+		userGroupsToRemove = [...store.invitationPayload.userGroupsToRemove];
+	}
+	userGroupsToRemove.push({userGroupId: userGroup.id});
+	store.updatePayload('userGroupsToRemove', userGroupsToRemove, false);
 }
 
 const userGroupErrors = computed(() => {
-	return store.errors.userGroupsToAdd || [];
+	return store.errors || [];
 });
 </script>
