@@ -348,9 +348,7 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 			});
 			if (!invitationRequestPayload.value.privacyStatement) {
 				errors.value = {
-					privacyStatement: [
-						'Please confirm that you have read and agree privacy statement',
-					],
+					privacyStatement: [t('acceptInvitation.privacyStatement.validation')],
 				};
 			} else {
 				await fetch();
