@@ -10,7 +10,7 @@
 		<template #top-controls>
 			<Search
 				:search-phrase="searchPhrase"
-				:search-label="t('user.search')"
+				:search-label="t('userAccess.search')"
 				@search-phrase-changed="store.setSearchPhrase"
 			/>
 		</template>
@@ -18,7 +18,7 @@
 			<TableColumn>{{ t('userAccess.tableHeader.name') }}</TableColumn>
 			<TableColumn>{{ t('about.contact.email') }}</TableColumn>
 			<TableColumn>{{ t('user.roles') }}</TableColumn>
-			<TableColumn>{{ t('userAccess.roleTable.startDate') }}</TableColumn>
+			<TableColumn>{{ t('userAccess.tableHeader.startDate') }}</TableColumn>
 			<TableColumn>{{ t('user.affiliation') }}</TableColumn>
 			<TableColumn>
 				<span class="sr-only">{{ t('common.moreActions') }}</span>
@@ -64,15 +64,10 @@
 			</TableRow>
 		</TableBody>
 	</PkpTable>
-	<div class="flex justify-end">
-		<Pagination
-			:current-page="store.userAccessPagination.currentPage"
-			:last-page="store.userAccessPagination.pageCount"
-			:is-loading="store.isUserAccessLoading"
-			:show-adjacent-pages="3"
-			@set-page="store.setCurrentPage"
-		/>
-	</div>
+	<TablePagination
+		:pagination="store.userAccessPagination"
+		@set-page="store.setCurrentPage"
+	/>
 </template>
 
 <script setup>
@@ -84,7 +79,7 @@ import TableBody from '@/components/Table/TableBody.vue';
 import TableRow from '@/components/Table/TableRow.vue';
 import Icon from '@/components/Icon/Icon.vue';
 import {useUserAccessManagerStore} from './UserAccessManagerStore.js';
-import Pagination from '@/components/Pagination/Pagination.vue';
+import TablePagination from '@/components/Table/TablePagination.vue';
 import {useTranslation} from '@/composables/useTranslation';
 import {useDate} from '@/composables/useDate';
 import DropdownActions from '@/components/DropdownActions/DropdownActions.vue';
