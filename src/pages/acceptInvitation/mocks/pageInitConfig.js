@@ -242,7 +242,7 @@ export default {
 									isRequired: true,
 									isMultilingual: false,
 									description:
-										'Also known as a forename or the first name, it is tha part of a personal name that identifies a preson',
+										'Also known as a forename or the first name, it is tha part of a personal name that identifies a person',
 									value: {
 										en: '',
 										fr_CA: '',
