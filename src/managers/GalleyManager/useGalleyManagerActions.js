@@ -75,6 +75,7 @@ export function useGalleyManagerActions() {
 	}
 
 	function galleyAdd({submission, publication}, finishedCallback) {
+		console.log(submission, publication);
 		const {openLegacyModal} = useLegacyGridUrl({
 			component: 'grid.articleGalleys.ArticleGalleyGridHandler',
 			op: 'addGalley',
