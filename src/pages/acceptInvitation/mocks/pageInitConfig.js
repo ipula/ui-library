@@ -345,6 +345,25 @@ export default {
 			],
 		},
 		{
+			id: 'aboutSubmission',
+			name: 'About Submission',
+			reviewName: '',
+			stepLabel: '{$step} - About Submission',
+			type: 'form',
+			description:
+				'Yo can access the submission file and go through the review details',
+			nextButtonLabel: 'Save And Continue',
+			sections: [
+				{
+					id: 'aboutSubmission',
+					sectionComponent: 'AcceptInvitationAboutSubmission',
+					props: {
+						validateFields: [],
+					},
+				},
+			],
+		},
+		{
 			id: 'userCreateReview',
 			name: 'Review & create account',
 			reviewName: 'Roles',
