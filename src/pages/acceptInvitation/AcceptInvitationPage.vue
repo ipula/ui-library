@@ -80,6 +80,7 @@ import AcceptInvitationUserDetailsForms from './AcceptInvitationUserDetailsForms
 import AcceptInvitationUserAccountDetails from './AcceptInvitationUserAccountDetails.vue';
 import AcceptInvitationReview from './AcceptInvitationReview.vue';
 import AcceptInvitationVerifyOrcid from './AcceptInvitationVerifyOrcid.vue';
+import AcceptInvitationAboutSubmission from './AcceptInvitationAboutSubmission.vue';
 
 const props = defineProps({
 	/** steps for invite user */
@@ -121,5 +122,6 @@ const acceptInvitationComponents = {
 	AcceptInvitationUserAccountDetails,
 	AcceptInvitationVerifyOrcid,
 	AcceptInvitationReview,
+	AcceptInvitationAboutSubmission,
 };
 </script>
