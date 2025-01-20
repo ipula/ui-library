@@ -1,13 +1,16 @@
 <template>
 	<FieldOptions
-		:isRequired="false"
+		:is-required="false"
 		component="field-options"
-		:allErrors="{}"
+		:all-errors="{}"
 		name="reviewTypes"
 		label="Review Types"
 		type="radio"
 		:options="options"
-		@change="change"
+		@change="
+			(fieldName, propName, newValue, localeKey) =>
+				updateReviewDetails(index, fieldName, newValue)
+		"
 	/>
 	<FieldText
 		name="responseDueDate"
@@ -18,7 +21,7 @@
 		:all-errors="{}"
 		@change="
 			(fieldName, propName, newValue, localeKey) =>
-				updateUserGroup(index, fieldName, newValue)
+				updateReviewDetails(index, fieldName, newValue)
 		"
 	/>
 	<FieldText
@@ -30,7 +33,7 @@
 		:all-errors="{}"
 		@change="
 			(fieldName, propName, newValue, localeKey) =>
-				updateUserGroup(index, fieldName, newValue)
+				updateReviewDetails(index, fieldName, newValue)
 		"
 	/>
 </template>
@@ -39,6 +42,7 @@ import {defineProps} from 'vue';
 import FieldOptions from '@/components/Form/fields/FieldOptions.vue';
 import FieldText from '@/components/Form/fields/FieldText.vue';
 import {useLocalize} from '@/composables/useLocalize';
+import {useUserInvitationPageStore} from './UserInvitationPageStore';
 
 defineProps({
 	validateFields: {
@@ -49,10 +53,15 @@ defineProps({
 	},
 });
 
+const store = useUserInvitationPageStore();
 const {t} = useLocalize();
 const options = [
 	{value: 'anonymus', label: 'Anonymus Reviewer / Anonymus Author'},
 	{value: 'disclosed', label: 'Anonymus Reviewer / Disclosed Author'},
 	{value: 'open', label: 'open'},
 ];
+
+function updateReviewDetails(index, fieldName, newValue) {
+	store.updatePayload(fieldName, newValue, false);
+}
 </script>

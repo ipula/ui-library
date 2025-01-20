@@ -58,6 +58,24 @@ export default {
 	},
 	steps: [
 		{
+			id: 'searchUser',
+			name: 'Search User',
+			stepLabel: '{$step} - Search User',
+			description:
+				'Search for the user using their email address, username or ORCID iD. Enter at least one details to get started. If user does not exist, ypu can invite them to take up roles and be a part of your journal. If the user already exist in the system, you can view user information and invite to take a additional roles.',
+			nextButtonLabel: 'Search user (t)',
+			skipInvitationUpdate: true,
+			sections: [
+				{
+					id: 'searchUserForm',
+					sectionComponent: 'UserInvitationSearchFormStep',
+					props: {
+						validateFields: [],
+					},
+				},
+			],
+		},
+		{
 			id: 'userDetails',
 			name: 'Enter details',
 			stepLabel: '{$step} - Enter details and invite for roles',
@@ -265,16 +283,16 @@ export default {
 			],
 		},
 		{
-			id: 'searchUser',
-			name: 'Search User',
-			stepLabel: '{$step} - Search User',
+			id: 'reviewDetails',
+			name: 'Review Details',
+			stepLabel: '{$step} - Review Details',
 			description:
 				'Search for the user using their email address, username or ORCID iD. Enter at least one details to get started. If user does not exist, ypu can invite them to take up roles and be a part of your journal. If the user already exist in the system, you can view user information and invite to take a additional roles.',
-			nextButtonLabel: 'Search user (t)',
+			nextButtonLabel: 'Save and Continue (t)',
 			skipInvitationUpdate: true,
 			sections: [
 				{
-					id: 'searchUserForm',
+					id: 'reviewDetailsForm',
 					sectionComponent: 'ReviewerReviewDetailsStep',
 					props: {
 						validateFields: [],

@@ -804,6 +804,8 @@ window.pkp = {
 			'The submission has been advanced to the next round of review',
 		'workflow.submissionNextReviewRoundInFutureStage':
 			'The submission advanced to the next review round, was accepted, and is currently in the {$stage} stage.',
+			'reviewr.responseDueDate':'Review Response Date',
+			'reviewr.reviewDueDate':'Review Due Date'
 	},
 	tinyMCE: {
 		skinUrl: '/styles/tinymce',
