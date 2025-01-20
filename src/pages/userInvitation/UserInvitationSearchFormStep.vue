@@ -104,10 +104,10 @@ async function searchUser() {
 				store.updatePayload('userId', user.id);
 				store.updatePayload('givenName', user.givenName);
 				store.updatePayload('familyName', user.familyName);
-				store.updatePayload('orcid', user.orcid);
+				store.updatePayload('userOrcid', user.orcid);
 				store.updatePayload('currentUserGroups', user.groups);
 				store.updatePayload('affiliation', user.affiliation);
-				store.updatePayload('country', user.country);
+				store.updatePayload('userCountry', user.country);
 				store.userSearch.message = t('userInvitation.search.userFound');
 				store.userSearch.class = 'font-bold text-success';
 			}

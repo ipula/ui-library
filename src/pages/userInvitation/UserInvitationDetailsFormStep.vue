@@ -17,7 +17,7 @@
 			<FormDisplayItemBasic
 				heading-element="h4"
 				:heading="t('user.orcid')"
-				:value="store.invitationPayload.orcid"
+				:value="store.invitationPayload.userOrcid"
 			></FormDisplayItemBasic>
 
 			<Icon

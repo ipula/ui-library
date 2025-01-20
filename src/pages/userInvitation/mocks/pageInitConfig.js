@@ -44,7 +44,7 @@ export default {
 	invitationPayload: {
 		userId: null,
 		inviteeEmail: '',
-		orcid: '',
+		userOrcid: '',
 		givenName: '',
 		familyName: '',
 		orcidValidation: false,
