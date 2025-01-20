@@ -15,10 +15,10 @@
 			/>
 		</template>
 		<TableHeader>
-			<TableColumn>{{ t('userAccess.tableHeader.name') }}</TableColumn>
+			<TableColumn>{{ t('common.name') }}</TableColumn>
 			<TableColumn>{{ t('about.contact.email') }}</TableColumn>
 			<TableColumn>{{ t('user.roles') }}</TableColumn>
-			<TableColumn>{{ t('userAccess.tableHeader.startDate') }}</TableColumn>
+			<TableColumn>{{ t('user.startDate') }}</TableColumn>
 			<TableColumn>{{ t('user.affiliation') }}</TableColumn>
 			<TableColumn>
 				<span class="sr-only">{{ t('common.moreActions') }}</span>
