@@ -920,6 +920,14 @@ window.pkp = {
 		'user.affiliations.primaryLocaleRequired':
 			'The primary language {$primaryLocale} is required',
 		'workflow.uploadRevisions': 'Upload revisions',
+		'grid.user.grid.user.enableReasonDescription':
+			"Once the user is enabled, they will regain access to OJS, and you'll be able to invite them to roles as needed.",
+		'grid.user.grid.user.disableReasonDescription':
+			"Please note that once a user is disabled, you won't be able to add them to any roles until they are enabled again.",
+		'user.url':'Homepage URL',
+		'user.workingLanguages':'Working Languages',
+		'user.bioStatement':'Bio Statement',
+		'common.viewMoreDetails':'View more details',
 	},
 	tinyMCE: {
 		skinUrl: '/styles/tinymce',
