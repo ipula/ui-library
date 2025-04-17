@@ -129,6 +129,10 @@ const props = defineProps({
 		type: String,
 		required: true,
 	},
+	invitationUserData: {
+		type: Array,
+		required: true,
+	},
 });
 const {t} = useLocalize();
 const wrapper = ref(null);
