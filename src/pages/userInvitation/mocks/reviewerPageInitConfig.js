@@ -39,11 +39,11 @@ export default {
 	pageTitleDescription:
 		'You are inviting a user to take a role in OJS along with appearing in the journal masthead',
 	primaryLocale: 'en',
-	invitationType: 'userRoleAssignment',
+	invitationType: 'reviewerAccess',
 	invitationMode: 'create',
 	invitationPayload: {
 		userId: null,
-		inviteeEmail: '',
+		email: '',
 		orcid: '',
 		givenName: '',
 		familyName: '',
@@ -57,24 +57,6 @@ export default {
 		},
 	},
 	steps: [
-		{
-			id: 'searchUser',
-			name: 'Search User',
-			stepLabel: '{$step} - Search User',
-			description:
-				'Search for the user using their email address, username or ORCID iD. Enter at least one details to get started. If user does not exist, ypu can invite them to take up roles and be a part of your journal. If the user already exist in the system, you can view user information and invite to take a additional roles.',
-			nextButtonLabel: 'Search user (t)',
-			skipInvitationUpdate: true,
-			sections: [
-				{
-					id: 'searchUserForm',
-					sectionComponent: 'UserInvitationSearchFormStep',
-					props: {
-						validateFields: [],
-					},
-				},
-			],
-		},
 		{
 			id: 'userDetails',
 			name: 'Enter details',
@@ -273,29 +255,11 @@ export default {
 							errors: {},
 						},
 						validateFields: [
-							'inviteeEmail',
+							'email',
 							'givenName',
 							'familyName',
 							'userGroupsToAdd',
 						],
-					},
-				},
-			],
-		},
-		{
-			id: 'reviewDetails',
-			name: 'Review Details',
-			stepLabel: '{$step} - Review Details',
-			description:
-				'Search for the user using their email address, username or ORCID iD. Enter at least one details to get started. If user does not exist, ypu can invite them to take up roles and be a part of your journal. If the user already exist in the system, you can view user information and invite to take a additional roles.',
-			nextButtonLabel: 'Save and Continue (t)',
-			skipInvitationUpdate: true,
-			sections: [
-				{
-					id: 'reviewDetailsForm',
-					sectionComponent: 'ReviewerReviewDetailsStep',
-					props: {
-						validateFields: [],
 					},
 				},
 			],
