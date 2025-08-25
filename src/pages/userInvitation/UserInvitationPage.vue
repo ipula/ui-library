@@ -143,4 +143,5 @@ const userInvitationComponents = {
 	UserInvitationEmailComposerStep,
 	ReviewerReviewDetailsStep,
 };
+console.log(props);
 </script>

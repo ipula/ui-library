@@ -4,7 +4,7 @@
 		component="field-options"
 		:all-errors="{}"
 		name="reviewTypes"
-		label="Review Types"
+		:label="t('reviewer.reviewTypes')"
 		type="radio"
 		:options="options"
 		@change="
@@ -12,30 +12,32 @@
 				updateReviewDetails(index, fieldName, newValue)
 		"
 	/>
-	<FieldText
-		name="responseDueDate"
-		:label="t('reviewr.responseDueDate')"
-		input-type="date"
-		:is-required="true"
-		value=""
-		:all-errors="{}"
-		@change="
-			(fieldName, propName, newValue, localeKey) =>
-				updateReviewDetails(index, fieldName, newValue)
-		"
-	/>
-	<FieldText
-		name="reviewDueDate"
-		:label="t('reviewr.reviewDueDate')"
-		input-type="date"
-		:is-required="true"
-		value=""
-		:all-errors="{}"
-		@change="
-			(fieldName, propName, newValue, localeKey) =>
-				updateReviewDetails(index, fieldName, newValue)
-		"
-	/>
+	<div class="p-8">
+		<FieldText
+			name="responseDueDate"
+			:label="t('reviewer.responseDueDate')"
+			input-type="date"
+			:is-required="true"
+			value=""
+			:all-errors="{}"
+			@change="
+				(fieldName, propName, newValue, localeKey) =>
+					updateReviewDetails(index, fieldName, newValue)
+			"
+		/>
+		<FieldText
+			name="reviewDueDate"
+			:label="t('reviewer.reviewDueDate')"
+			input-type="date"
+			:is-required="true"
+			value=""
+			:all-errors="{}"
+			@change="
+				(fieldName, propName, newValue, localeKey) =>
+					updateReviewDetails(index, fieldName, newValue)
+			"
+		/>
+	</div>
 </template>
 <script setup>
 import {defineProps} from 'vue';
