@@ -241,11 +241,16 @@ export const useAcceptInvitationPageStore = defineComponentStore(
 		 * Go to the next step or submit if this is the last step
 		 */
 		async function nextStep() {
+			console.log(steps.value[0]);
 			if (isOnLastStep.value) {
 				submit();
 			} else {
-				await updateInvitationPayload();
-				if (isValid.value) {
+				if (!currentStep.value?.skipInvitationUpdate) {
+					await updateInvitationPayload();
+					if (isValid.value) {
+						openStep(steps.value[1 + currentStepIndex.value].id);
+					}
+				} else {
 					openStep(steps.value[1 + currentStepIndex.value].id);
 				}
 			}
