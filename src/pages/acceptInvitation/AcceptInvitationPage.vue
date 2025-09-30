@@ -124,4 +124,5 @@ const acceptInvitationComponents = {
 	AcceptInvitationReview,
 	AcceptInvitationAboutSubmission,
 };
+console.log(props);
 </script>

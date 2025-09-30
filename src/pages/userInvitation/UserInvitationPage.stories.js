@@ -131,32 +131,8 @@ export const Reviewer = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get(
-					'https://mock/index.php/publicknowledge/api/v1/users',
-					({request}) => {
-						const url = new URL(request.url);
-						let params = new URLSearchParams(url.search);
-
-						// To store the parameters in a simple object
-						let allParams = {};
-						for (let param of params) {
-							allParams[param[0]] = param[1];
-						}
-						if (
-							allParams.searchPhrase.replaceAll(/\s/g, '') ===
-							'carlo@mailinator.com'
-						) {
-							return HttpResponse.json(userMock);
-						} else {
-							return HttpResponse.json({
-								itemsMax: 0,
-								items: [],
-							});
-						}
-					},
-				),
 				http.post(
-					'https://mock/index.php/publicknowledge/api/v1/invitations/add/userRoleAssignment',
+					'https://mock/index.php/publicknowledge/api/v1/invitations/add/reviewerAccess',
 					() => {
 						return HttpResponse.json({invitationId: 15});
 					},
@@ -166,6 +142,7 @@ export const Reviewer = {
 					async ({request}) => {
 						const data = await request.json();
 						let errors = {};
+						console.log(data.invitationData);
 
 						data.invitationData.userGroupsToAdd.forEach((element, index) => {
 							Object.keys(element).forEach((key) => {
@@ -188,6 +165,18 @@ export const Reviewer = {
 						}
 						if (data.invitationData.givenName === '') {
 							errors['givenName'] = ['This field is required'];
+						}
+
+						if (data.invitationData.responseDueDate === '') {
+							errors['responseDueDate'] = ['This field is required'];
+						}
+
+						if (data.invitationData.reviewDueDate === '') {
+							errors['reviewDueDate'] = ['This field is required'];
+						}
+
+						if (data.invitationData.reviewTypes === '') {
+							errors['reviewTypes'] = ['This field is required'];
 						}
 
 						if (data.invitationData.emailComposer) {
@@ -220,12 +209,6 @@ export const Reviewer = {
 					'https://mock/index.php/publicknowledge/api/v1/user/_invite',
 					() => {
 						return HttpResponse.json('invitation send successfully');
-					},
-				),
-				http.post(
-					'https://mock/index.php/publicknowledge/api/v1/users/35/roles/17',
-					() => {
-						return HttpResponse.json('role remove successfully');
 					},
 				),
 			],

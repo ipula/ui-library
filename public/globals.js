@@ -1011,35 +1011,19 @@ window.pkp = {
 			'The submission advanced to the next review round, was accepted, and is currently in the {$stage} stage.',
 			'reviewr.responseDueDate':'Review Response Date',
 			'reviewr.reviewDueDate':'Review Due Date',
-		'user.affiliations': 'Affiliations',
-		'user.affiliations.description':
-			'Enter the full name of the institution below, avoiding any acronyms. Select the name from the dropdown and click "Add" to include the affiliation in your profile. (e.g. "Simon Fraser University")',
-		'user.affiliations.institution': 'Institution',
-		'user.affiliations.translation': 'More information',
-		'user.affiliations.translationEditActionLabel': 'Edit institution name',
-		'user.affiliations.translationDeleteActionLabel': 'Remove institution',
-		'user.affiliations.translationActionsAriaLabel': 'Click to edit or delete',
-		'user.affiliations.translationsAllAvailable': 'All translations available',
-		'user.affiliations.translationsSomeAvailable':
-			'{$count} of {$total} languages completed',
-		'user.affiliations.typeTranslationNameInLanguageLabel':
-			'Type the institute name in {$language}',
-		'user.affiliations.translationNameInLanguage':
-			'Institute name in {$language}',
-		'user.affiliations.deleteModal.title': 'Are you sure?',
-		'user.affiliations.deleteModal.message':
-			'The affiliation <strong>{$affiliation}</strong> will be deleted.',
-		'user.affiliations.searchPhraseLabel':
-			'Type the institute name in {$language}',
-		'user.affiliations.searchPhraseNothingFound':
-			'Your search phrase could not be found',
-		'user.affiliations.primaryLocaleRequired':
-			'The primary language {$primaryLocale} is required',
 		'workflow.uploadRevisions': 'Upload revisions',
 		'grid.user.grid.user.enableReasonDescription':
 			"Once the user is enabled, they will regain access to OJS, and you'll be able to invite them to roles as needed.",
 		'grid.user.grid.user.disableReasonDescription':
 			"Please note that once a user is disabled, you won't be able to add them to any roles until they are enabled again.",
+		'reviewerInvitation.responseDueDate':'Review Response Date',
+		'reviewerInvitation.reviewDueDate':'Review Response Due Date',
+		'reviewerInvitation.reviewTypes':'Review Types',
+		'reviewerInvitation.modal.message':'{$email} has been invited to review the submission "{$articleTitle}"<br><br> You can be updated about the user\'s descision on the reviewer panel in the review workflow or through email and OJS notifications',
+		'reviewerInvitation.modal.button':'View submission',
+		'reviewerInvitation.reviewTypes.anonymousAuthorOrReviewer':'Anonymous Reviewer / Anonymous Author',
+		'reviewerInvitation.reviewTypes.disclosedAuthor':'Anonymous Reviewer / Disclosed Author',
+		'reviewerInvitation.reviewTypes.open':'Open'
 	},
 	tinyMCE: {
 		skinUrl: '/styles/tinymce',
